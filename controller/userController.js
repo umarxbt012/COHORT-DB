@@ -36,3 +36,70 @@ const getOneUser= async function(req,res){
     };
     
 }
+const newUser= async function(req,res){
+    try{
+        const {username,password,phoneNumber,email}= req.body;
+        const user= await userModel.create({
+            username,
+            password,
+            phoneNumber,
+            email
+        });
+        return res.status(201).json({
+            message: "User created successfully",
+            data: user
+        });
+    } catch (error) {
+        return res.status(500).json({
+            message: "Error creating user",
+            error: error.message
+        });
+    }
+}
+const updateUser=async function (req,res) {
+    try{
+        const{phoneNumber, username}=req.body;
+        // findByIdAndUpdate is a method that takes in the id of the user, the updated data and an options object. The options object has a property called new which is set to true. This means that the method will return the updated user object instead of the original user object. We are storing the updated user object in the variable update and then sending a response with status code 200 and a message along with the data which is the updated user object.
+        const update= await userModel.findByIdAndUpdate(
+            req.params.id,
+            {phoneNumber, username},
+            {new:true}
+        )
+             if(!update){
+                return res.status(404).json({
+                    message: "User not found"
+                });
+            }
+
+        return res.status(200).json({
+            message: "User updated successfully",
+            data: update
+            
+        });
+
+    }
+    catch(error){
+        return res.status(500).json({
+            message: "error updating user",
+            error: error.message
+        })
+    }
+    
+}
+const deleteUser= async function (req,res) {
+    try {
+        //findByIdAndDelete is a method that takes in the id of the user and deletes the user from the database. It returns the deleted user object if the deletion is successful. We are storing the deleted user object in the variable deleteUser and then sending a response with status code 200 and a message along with the data which is the deleted user object.
+        const deleteUser=await userModel.findByIdAndDelete(req.params.id);
+        return res.status(200).json({
+            message: "USER DELETED SUCCESSFULLY",
+            data: deleteUser
+        })
+    } catch (error) {
+       return res.status(500).json({
+        message:"error deleting user",
+        error: error.message
+       })
+    }
+    
+}
+module.exports={getAllUsers,getOneUser,newUser,deleteUser,updateUser}
